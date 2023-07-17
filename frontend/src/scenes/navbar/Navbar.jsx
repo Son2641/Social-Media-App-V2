@@ -21,15 +21,17 @@ import {
   Close,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { setMode, setLogout } from '../../state/index.js';
+import { setMode, setLogout, setSearchedUsers } from '../../state/index.js';
 import { useNavigate } from 'react-router-dom';
 import FlexBetween from '../../components/FlexBetween.jsx';
 
 const Navbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
+  const token = useSelector((state) => state.token);
   const isNonMobileScreens = useMediaQuery('(min-width: 1000px)');
 
   const theme = useTheme();
@@ -40,6 +42,35 @@ const Navbar = () => {
   const alt = theme.palette.background.alt;
 
   const fullName = `${user.firstName} ${user.lastName}`;
+
+  const handleSearch = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/users/search/${searchQuery}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const data = await response.json();
+      dispatch(setSearchedUsers({ searchedUsers: data }));
+      setSearchQuery('');
+      navigate('/users');
+
+      console.log(data);
+    } catch (error) {
+      console.error('Error searching users:', error);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   return (
     <FlexBetween padding='1rem 6%' backgroundColor={alt}>
@@ -58,6 +89,24 @@ const Navbar = () => {
         >
           ConnectSon
         </Typography>
+        {isNonMobileScreens && (
+          <FlexBetween
+            backgroundColor={neutralLight}
+            borderRadius='9px'
+            gap='3rem'
+            padding='0.1rem 1.5rem'
+          >
+            <InputBase
+              placeholder='Search...'
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
+            />
+            <IconButton onClick={handleSearch}>
+              <Search />
+            </IconButton>
+          </FlexBetween>
+        )}
       </FlexBetween>
 
       {/* DESKTOP NAV */}
