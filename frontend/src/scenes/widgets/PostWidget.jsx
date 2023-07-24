@@ -2,6 +2,7 @@ import {
   ChatBubbleOutlineOutlined,
   FavoriteBorderOutlined,
   FavoriteOutlined,
+  ShareOutlined,
 } from '@mui/icons-material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import {
@@ -97,6 +98,24 @@ const PostWidget = ({
     }
   };
 
+  const handleSharePost = async () => {
+    const response = await fetch(
+      `http://localhost:3001/posts/${postId}/share`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: loggedInUserId }),
+      }
+    );
+
+    const sharedPost = await response.json();
+    dispatch(setPosts({ sharedPost }));
+    console.log(sharedPost);
+  };
+
   const handleSnackbarClose = () => {
     setShowSnackbar(false);
   };
@@ -155,9 +174,14 @@ const PostWidget = ({
                 <Typography>{comments.length}</Typography>
               </FlexBetween>
             </FlexBetween>
-            <IconButton onClick={handleDeletePost}>
-              <DeleteOutlineIcon />
-            </IconButton>
+            <FlexBetween gap='0.3rem'>
+              <IconButton onClick={handleSharePost}>
+                <ShareOutlined />
+              </IconButton>
+              <IconButton onClick={handleDeletePost}>
+                <DeleteOutlineIcon />
+              </IconButton>
+            </FlexBetween>
           </FlexBetween>
           {isComments && (
             <Box mt='0.5rem'>
