@@ -53,7 +53,6 @@ export const sharePost = async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       location: user.location,
-      // description,
       userPicturePath: user.picturePath,
       likes: {},
       comments: [],
