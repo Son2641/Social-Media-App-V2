@@ -21,7 +21,7 @@ import Friend from '../../components/Friend';
 import WidgetWrapper from '../../components/WidgetWrapper';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setPost } from '../../state/index.js';
+import { setPost, setPosts } from '../../state/index.js';
 import Comment from '../../components/Comment';
 
 const PostWidget = ({
@@ -34,6 +34,13 @@ const PostWidget = ({
   userPicturePath,
   likes,
   comments,
+  postType,
+  origPostFirstName,
+  origPostLastName,
+  origPostUserPicturePath,
+  origPostLikes,
+  origPostComments,
+  isShared,
 }) => {
   const [isComments, setIsComments] = useState(false);
   const [isPostDeleted, setIsPostDeleted] = useState(false);
@@ -111,9 +118,9 @@ const PostWidget = ({
       }
     );
 
-    const sharedPost = await response.json();
-    dispatch(setPosts({ sharedPost }));
-    console.log(sharedPost);
+    const data = await response.json();
+    dispatch(setPosts({ posts: data }));
+    console.log(data);
   };
 
   const handleSnackbarClose = () => {

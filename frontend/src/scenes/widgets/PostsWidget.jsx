@@ -15,7 +15,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
     });
     const data = await response.json();
     dispatch(setPosts({ posts: data }));
-    console.log(data);
+    console.log(posts);
   };
 
   const getUserPosts = async () => {
@@ -50,20 +50,48 @@ const PostsWidget = ({ userId, isProfile = false }) => {
               userPicturePath,
               likes,
               comments,
-            }) => (
-              <PostWidget
-                key={_id}
-                postId={_id}
-                postUserId={userId}
-                name={`${firstName} ${lastName}`}
-                description={description}
-                location={location}
-                picturePath={picturePath}
-                userPicturePath={userPicturePath}
-                likes={likes}
-                comments={comments}
-              />
-            )
+              origPostFirstName,
+              origPostLastName,
+              origPostUserPicturePath,
+              origPostLikes,
+              origPostComments,
+              postType,
+            }) =>
+              postType === 'Normal' || postType === null ? (
+                <PostWidget
+                  key={_id}
+                  postId={_id}
+                  postUserId={userId}
+                  name={`${firstName} ${lastName}`}
+                  description={description}
+                  location={location}
+                  picturePath={picturePath}
+                  userPicturePath={userPicturePath}
+                  likes={likes}
+                  comments={comments}
+                  postType={postType}
+                />
+              ) : postType === 'Shared' ? (
+                <PostWidget
+                  key={_id}
+                  postId={_id}
+                  postUserId={userId}
+                  name={`${firstName} ${lastName}`}
+                  description={description}
+                  location={location}
+                  picturePath={picturePath}
+                  userPicturePath={userPicturePath}
+                  likes={likes}
+                  comments={comments}
+                  postType={postType}
+                  origPostFirstName={origPostFirstName}
+                  origPostLastName={origPostLastName}
+                  origPostUserPicturePath={origPostUserPicturePath}
+                  origPostLikes={origPostLikes}
+                  origPostComments={origPostComments}
+                  isShared={true}
+                />
+              ) : null
           )
         : null}
     </>
