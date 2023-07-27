@@ -15,14 +15,20 @@ import {
   Button,
   Snackbar,
   Alert,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from '@mui/material';
 import FlexBetween from '../../components/FlexBetween';
 import Friend from '../../components/Friend';
 import WidgetWrapper from '../../components/WidgetWrapper';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPost, setPosts } from '../../state/index.js';
 import Comment from '../../components/Comment';
+import { useNavigate } from 'react-router-dom';
 
 const PostWidget = ({
   postId,
@@ -46,15 +52,26 @@ const PostWidget = ({
   const [isComments, setIsComments] = useState(false);
   const [isPostDeleted, setIsPostDeleted] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const [comment, setComment] = useState('');
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const loggedInUserId = useSelector((state) => state.user._id);
+  const posts = useSelector((state) => state.posts);
   const isLiked = Boolean(likes[loggedInUserId]);
   const likeCount = Object.keys(likes).length;
   const { palette } = useTheme();
   const main = palette.neutral.main;
   const primary = palette.primary.main;
+  const navigate = useNavigate();
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
 
   const patchLike = async () => {
     const response = await fetch(`http://localhost:3001/posts/${postId}/like`, {
@@ -99,6 +116,7 @@ const PostWidget = ({
     if (response.ok) {
       setIsPostDeleted(true);
       setShowSnackbar(true);
+      setOpenDialog(false);
     } else {
       const errorData = await response.json();
       console.error('Delete post failed:', errorData);
@@ -119,7 +137,9 @@ const PostWidget = ({
     );
 
     const data = await response.json();
+
     dispatch(setPosts({ posts: data }));
+    navigate('/home');
   };
 
   const handleSnackbarClose = () => {
@@ -129,6 +149,27 @@ const PostWidget = ({
   if (isShared) {
     return (
       <>
+        <div>
+          <Dialog
+            open={openDialog}
+            onClose={handleCloseDialog}
+            aria-labelledby='alert-dialog-title'
+            aria-describedby='alert-dialog-description'
+          >
+            <DialogTitle id='alert-dialog-title'>{'Delete Post?'}</DialogTitle>
+            <DialogContent>
+              <DialogContentText id='alert-dialog-description'>
+                Are you sure you want to delete your post?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog}>Cancel</Button>
+              <Button onClick={handleDeletePost} autoFocus>
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
         {isPostDeleted ? (
           <Snackbar
             open={showSnackbar}
@@ -194,7 +235,7 @@ const PostWidget = ({
                   <Typography>{comments.length}</Typography>
                 </FlexBetween>
               </FlexBetween>
-              <IconButton onClick={handleDeletePost}>
+              <IconButton onClick={handleOpenDialog}>
                 <DeleteOutlineIcon />
               </IconButton>
             </FlexBetween>
@@ -256,6 +297,27 @@ const PostWidget = ({
 
   return (
     <>
+      <div>
+        <Dialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          aria-labelledby='alert-dialog-title'
+          aria-describedby='alert-dialog-description'
+        >
+          <DialogTitle id='alert-dialog-title'>{'Delete Post?'}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id='alert-dialog-description'>
+              Are you sure you want to delete your post?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog}>Cancel</Button>
+            <Button onClick={handleDeletePost} autoFocus>
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
       {isPostDeleted ? (
         <Snackbar
           open={showSnackbar}
@@ -313,7 +375,7 @@ const PostWidget = ({
                 <ShareOutlined />
               </IconButton>
               <Typography>{sharedBy.length}</Typography>
-              <IconButton onClick={handleDeletePost}>
+              <IconButton onClick={handleOpenDialog}>
                 <DeleteOutlineIcon />
               </IconButton>
             </FlexBetween>
