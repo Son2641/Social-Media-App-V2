@@ -35,12 +35,13 @@ const PostWidget = ({
   likes,
   comments,
   postType,
-  origPostFirstName,
-  origPostLastName,
+  origPostUserId,
+  origPostName,
   origPostUserPicturePath,
-  origPostLikes,
-  origPostComments,
+  origPostPicturePath,
+  origPostDescription,
   isShared,
+  sharedBy,
 }) => {
   const [isComments, setIsComments] = useState(false);
   const [isPostDeleted, setIsPostDeleted] = useState(false);
@@ -51,7 +52,6 @@ const PostWidget = ({
   const loggedInUserId = useSelector((state) => state.user._id);
   const isLiked = Boolean(likes[loggedInUserId]);
   const likeCount = Object.keys(likes).length;
-
   const { palette } = useTheme();
   const main = palette.neutral.main;
   const primary = palette.primary.main;
@@ -120,12 +120,139 @@ const PostWidget = ({
 
     const data = await response.json();
     dispatch(setPosts({ posts: data }));
-    console.log(data);
   };
 
   const handleSnackbarClose = () => {
     setShowSnackbar(false);
   };
+
+  if (isShared) {
+    return (
+      <>
+        {isPostDeleted ? (
+          <Snackbar
+            open={showSnackbar}
+            autoHideDuration={1500}
+            onClose={handleSnackbarClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            message='Post is deleted'
+          >
+            <Alert severity='success'>Post is deleted</Alert>
+          </Snackbar>
+        ) : (
+          <WidgetWrapper m='1rem 0'>
+            <Friend
+              friendId={postUserId}
+              name={name}
+              subtitle={location}
+              userPicturePath={userPicturePath}
+            />
+            <WidgetWrapper
+              m='1rem 1rem'
+              sx={{
+                boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
+                borderRadius: '1rem',
+              }}
+            >
+              <Friend
+                friendId={origPostUserId}
+                name={origPostName}
+                userPicturePath={origPostUserPicturePath}
+              />
+              <Typography color={main} sx={{ mt: '1rem' }}>
+                {origPostDescription}
+              </Typography>
+              {origPostPicturePath && (
+                <img
+                  width='100%'
+                  height='auto'
+                  alt='post'
+                  style={{ borderRadius: '0.75rem', marginTop: '0.75rem' }}
+                  src={`http://localhost:3001/assets/${origPostPicturePath}`}
+                />
+              )}
+            </WidgetWrapper>
+            <FlexBetween mt='0.25rem'>
+              <FlexBetween gap='1rem'>
+                <FlexBetween gap='0.3rem'>
+                  <IconButton onClick={patchLike}>
+                    {isLiked ? (
+                      <FavoriteOutlined sx={{ color: primary }} />
+                    ) : (
+                      <FavoriteBorderOutlined />
+                    )}
+                  </IconButton>
+                  <Typography>{likeCount}</Typography>
+                </FlexBetween>
+                <FlexBetween gap='0.3rem'>
+                  <IconButton onClick={() => setIsComments(!isComments)}>
+                    <ChatBubbleOutlineOutlined />
+                  </IconButton>
+                  <Typography>{comments.length}</Typography>
+                </FlexBetween>
+              </FlexBetween>
+              <IconButton onClick={handleDeletePost}>
+                <DeleteOutlineIcon />
+              </IconButton>
+            </FlexBetween>
+            {isComments && (
+              <Box mt='0.5rem'>
+                {comments
+                  .slice(0)
+                  .reverse()
+                  .map((comment, i) => (
+                    <Box key={`${name}-${i}`}>
+                      <Divider />
+                      <Comment
+                        userId={comment.userId}
+                        comment={comment.comment}
+                        postId={postId}
+                      />
+                    </Box>
+                  ))}
+                <Divider />
+                <FlexBetween>
+                  <InputBase
+                    placeholder='Write a comment ...'
+                    onChange={(e) => setComment(e.target.value)}
+                    value={comment}
+                    sx={{
+                      width: '100%',
+                      backgroundColor: palette.neutral.light,
+                      borderRadius: '2rem',
+                      padding: '1rem 2rem',
+                      mt: '1rem',
+                    }}
+                  />
+                  <Button
+                    disabled={!comment}
+                    onClick={handleComment}
+                    sx={{
+                      color: palette.background.alt,
+                      mt: '1rem',
+                      ml: '0.5rem',
+                      backgroundColor: palette.primary.main,
+                      borderRadius: '3rem',
+                      '&:hover': {
+                        cursor: 'pointer',
+                        color: palette.background.alt,
+                        backgroundColor: palette.primary.main,
+                      },
+                    }}
+                  >
+                    POST
+                  </Button>
+                </FlexBetween>
+              </Box>
+            )}
+          </WidgetWrapper>
+        )}
+      </>
+    );
+  }
 
   return (
     <>
@@ -185,6 +312,7 @@ const PostWidget = ({
               <IconButton onClick={handleSharePost}>
                 <ShareOutlined />
               </IconButton>
+              <Typography>{sharedBy.length}</Typography>
               <IconButton onClick={handleDeletePost}>
                 <DeleteOutlineIcon />
               </IconButton>

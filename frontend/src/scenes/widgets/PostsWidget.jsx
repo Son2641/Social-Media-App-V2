@@ -50,12 +50,14 @@ const PostsWidget = ({ userId, isProfile = false }) => {
               userPicturePath,
               likes,
               comments,
+              origPostUserId,
               origPostFirstName,
               origPostLastName,
               origPostUserPicturePath,
-              origPostLikes,
-              origPostComments,
+              origPostPicturePath,
+              origPostDescription,
               postType,
+              sharedBy,
             }) =>
               postType === 'Normal' || postType === null ? (
                 <PostWidget
@@ -70,6 +72,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
                   likes={likes}
                   comments={comments}
                   postType={postType}
+                  sharedBy={sharedBy}
                 />
               ) : postType === 'Shared' ? (
                 <PostWidget
@@ -84,12 +87,13 @@ const PostsWidget = ({ userId, isProfile = false }) => {
                   likes={likes}
                   comments={comments}
                   postType={postType}
-                  origPostFirstName={origPostFirstName}
-                  origPostLastName={origPostLastName}
+                  origPostUserId={origPostUserId}
+                  origPostName={`${origPostFirstName} ${origPostLastName}`}
                   origPostUserPicturePath={origPostUserPicturePath}
-                  origPostLikes={origPostLikes}
-                  origPostComments={origPostComments}
+                  origPostPicturePath={origPostPicturePath}
+                  origPostDescription={origPostDescription}
                   isShared={true}
+                  sharedBy={sharedBy}
                 />
               ) : null
           )

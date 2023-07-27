@@ -33,6 +33,9 @@ const PostSchema = new Schema(
       type: Array,
       default: [],
     },
+    origPostUserId: {
+      type: String,
+    },
     origPostFirstName: {
       type: String,
     },
@@ -40,6 +43,12 @@ const PostSchema = new Schema(
       type: String,
     },
     origPostUserPicturePath: {
+      type: String,
+    },
+    origPostPicturePath: {
+      type: String,
+    },
+    origPostDescription: {
       type: String,
     },
     origPostLikes: {
