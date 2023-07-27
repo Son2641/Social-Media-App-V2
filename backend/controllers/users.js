@@ -1,6 +1,30 @@
 import User from '../models/User.js';
 
 // Read
+export const searchUsers = async (req, res) => {
+  try {
+    const { query } = req.params;
+
+    const users = await User.find({
+      $or: [
+        { firstName: { $regex: query, $options: 'i' } },
+        { lastName: { $regex: query, $options: 'i' } },
+      ],
+    });
+
+    const usersWithFullName = users.map((user) => ({
+      _id: user._id,
+      fullName: `${user.firstName} ${user.lastName}`,
+      picturePath: user.picturePath,
+      location: user.location,
+    }));
+
+    res.status(200).json(usersWithFullName);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 export const getUser = async (req, res) => {
   try {
     const { id } = req.params;
