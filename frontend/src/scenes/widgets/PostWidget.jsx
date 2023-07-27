@@ -24,7 +24,7 @@ import {
 import FlexBetween from '../../components/FlexBetween';
 import Friend from '../../components/Friend';
 import WidgetWrapper from '../../components/WidgetWrapper';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPost, setPosts } from '../../state/index.js';
 import Comment from '../../components/Comment';
@@ -40,7 +40,6 @@ const PostWidget = ({
   userPicturePath,
   likes,
   comments,
-  postType,
   origPostUserId,
   origPostName,
   origPostUserPicturePath,
