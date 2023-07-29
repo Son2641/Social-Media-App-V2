@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   IconButton,
@@ -9,6 +9,7 @@ import {
   FormControl,
   useTheme,
   useMediaQuery,
+  Autocomplete,
 } from '@mui/material';
 import {
   Search,
@@ -24,15 +25,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setMode, setLogout, setSearchedUsers } from '../../state/index.js';
 import { useNavigate } from 'react-router-dom';
 import FlexBetween from '../../components/FlexBetween.jsx';
+import Friend from '../../components/Friend.jsx';
 
 const Navbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
-  const isNonMobileScreens = useMediaQuery('(min-width: 1000px)');
+  const isNonMobileScreens = useMediaQuery('(min-width: 769px)');
 
   const theme = useTheme();
   const neutralLight = theme.palette.neutral.light;
@@ -44,6 +47,9 @@ const Navbar = () => {
   const fullName = `${user.firstName} ${user.lastName}`;
 
   const handleSearch = async () => {
+    if (searchQuery.trim() === '') {
+      return;
+    }
     try {
       const response = await fetch(
         `http://localhost:3001/users/search/${searchQuery}`,
@@ -59,8 +65,6 @@ const Navbar = () => {
       dispatch(setSearchedUsers({ searchedUsers: data }));
       setSearchQuery('');
       navigate('/users');
-
-      console.log(data);
     } catch (error) {
       console.error('Error searching users:', error);
     }
@@ -71,6 +75,47 @@ const Navbar = () => {
       handleSearch();
     }
   };
+
+  const [searchTimer, setSearchTimer] = useState(null);
+
+  const performSearch = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/users/search/${searchQuery}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const data = await response.json();
+      setSearchResults(data);
+    } catch (error) {
+      console.error('Error searching users:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (searchTimer) {
+      clearTimeout(searchTimer);
+    }
+
+    if (searchQuery.trim() !== '') {
+      setSearchResults([]);
+      const newSearchTimer = setTimeout(() => {
+        performSearch();
+      }, 500);
+      setSearchTimer(newSearchTimer);
+    }
+
+    return () => {
+      if (searchTimer) {
+        clearTimeout(searchTimer);
+      }
+    };
+  }, [searchQuery]);
 
   return (
     <FlexBetween padding='1rem 6%' backgroundColor={alt}>
@@ -89,24 +134,39 @@ const Navbar = () => {
         >
           ConnectSon
         </Typography>
-        {isNonMobileScreens && (
-          <FlexBetween
-            backgroundColor={neutralLight}
-            borderRadius='9px'
-            gap='3rem'
-            padding='0.1rem 1.5rem'
-          >
-            <InputBase
-              placeholder='Search...'
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={handleKeyPress}
+
+        <FlexBetween
+          backgroundColor={neutralLight}
+          borderRadius='9px'
+          gap='0'
+          padding='0.1rem 1.5rem'
+        >
+          <Box>
+            <Autocomplete
+              options={searchResults}
+              getOptionLabel={(user) => user.fullName}
+              renderInput={(params) => (
+                <InputBase
+                  {...params}
+                  placeholder='Search Users...'
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                />
+              )}
+              renderOption={(user) => (
+                <Friend
+                  friendId={user._id}
+                  name={user.fullName}
+                  userPicturePath={user.picturePath}
+                />
+              )}
             />
-            <IconButton onClick={handleSearch}>
-              <Search />
-            </IconButton>
-          </FlexBetween>
-        )}
+          </Box>
+
+          <IconButton onClick={handleSearch}>
+            <Search />
+          </IconButton>
+        </FlexBetween>
       </FlexBetween>
 
       {/* DESKTOP NAV */}
