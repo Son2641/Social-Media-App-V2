@@ -1,30 +1,16 @@
 import User from '../models/User.js';
 
-// Read
-export const searchUsers = async (req, res) => {
-  try {
-    const { query } = req.params;
-
-    const users = await User.find({
-      $or: [
-        { firstName: { $regex: query, $options: 'i' } },
-        { lastName: { $regex: query, $options: 'i' } },
-      ],
-    });
-
-    const usersWithFullName = users.map((user) => ({
-      _id: user._id,
-      fullName: `${user.firstName} ${user.lastName}`,
-      picturePath: user.picturePath,
-      location: user.location,
-    }));
-
-    res.status(200).json(usersWithFullName);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+//Read ALL 
+export const getAll = async (req, res) => {
+  try{
+    const result = await User.find();
+    res.json({allUsers : result})
+  } catch(err){
+    res.status(404).json({error: err.message})
   }
 };
 
+//Read
 export const getUser = async (req, res) => {
   try {
     const { id } = req.params;

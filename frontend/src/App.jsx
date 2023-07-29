@@ -2,7 +2,7 @@ import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
 import HomePage from '../src/scenes/homePage/HomePage';
 import LoginPage from '../src/scenes/loginPage/LoginPage';
 import ProfilePage from '../src/scenes/profilePage/ProfilePage';
-import UsersPage from './scenes/usersPage/UsersPage';
+// delete
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { CssBaseline, ThemeProvider } from '@mui/material';
@@ -29,10 +29,7 @@ function App() {
               path='/profile/:userId'
               element={isAuth ? <ProfilePage /> : <Navigate to='/' />}
             />
-            <Route
-              path='/users'
-              element={isAuth ? <UsersPage /> : <Navigate to='/' />}
-            />
+          {/* delete */}
           </Routes>
         </ThemeProvider>
       </BrowserRouter>

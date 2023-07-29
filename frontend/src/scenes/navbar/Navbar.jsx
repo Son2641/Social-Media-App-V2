@@ -24,14 +24,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setMode, setLogout, setSearchedUsers } from '../../state/index.js';
 import { useNavigate } from 'react-router-dom';
 import FlexBetween from '../../components/FlexBetween.jsx';
+//new..
+import SearchBar from '../searchUser/Searchbar.jsx';
 
 const Navbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+ //delete
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
-  const token = useSelector((state) => state.token);
+//delete
   const isNonMobileScreens = useMediaQuery('(min-width: 1000px)');
 
   const theme = useTheme();
@@ -42,36 +44,12 @@ const Navbar = () => {
   const alt = theme.palette.background.alt;
 
   const fullName = `${user.firstName} ${user.lastName}`;
-
-  const handleSearch = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:3001/users/search/${searchQuery}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      const data = await response.json();
-      dispatch(setSearchedUsers({ searchedUsers: data }));
-      setSearchQuery('');
-      navigate('/users');
-
-      console.log(data);
-    } catch (error) {
-      console.error('Error searching users:', error);
-    }
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
+ //new...                                        // close
+ const [showSearchBar, setShowSearchBar] = useState(false); // State to toggle the SearchBar
+ const SearchIcon = () => {
+   setShowSearchBar(!showSearchBar);
+ }
+  
   return (
     <FlexBetween padding='1rem 6%' backgroundColor={alt}>
       <FlexBetween gap='1.75rem'>
@@ -89,25 +67,21 @@ const Navbar = () => {
         >
           ConnectSon
         </Typography>
-        {isNonMobileScreens && (
-          <FlexBetween
-            backgroundColor={neutralLight}
-            borderRadius='9px'
-            gap='3rem'
-            padding='0.1rem 1.5rem'
-          >
-            <InputBase
-              placeholder='Search...'
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={handleKeyPress}
-            />
-            <IconButton onClick={handleSearch}>
-              <Search />
-            </IconButton>
-          </FlexBetween>
-        )}
+
+      {/*new-start*/}
+      {showSearchBar ? (
+        showSearchBar && (<Box mt={0.5}> 
+       {/* if SearchIcon 'click' then props ='true' to trigger autofocus the the InputBase*/}
+        <SearchBar  triggerIcon={showSearchBar}  />
+        </Box>) ) : (
+        <IconButton 
+          onClick={SearchIcon}
+          sx={{background: neutralLight}} >
+          <Search  />
+        </IconButton>
+      )}
       </FlexBetween>
+      {/* new-end */}
 
       {/* DESKTOP NAV */}
       {isNonMobileScreens ? (
