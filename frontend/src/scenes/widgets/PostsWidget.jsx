@@ -49,20 +49,52 @@ const PostsWidget = ({ userId, isProfile = false }) => {
               userPicturePath,
               likes,
               comments,
-            }) => (
-              <PostWidget
-                key={_id}
-                postId={_id}
-                postUserId={userId}
-                name={`${firstName} ${lastName}`}
-                description={description}
-                location={location}
-                picturePath={picturePath}
-                userPicturePath={userPicturePath}
-                likes={likes}
-                comments={comments}
-              />
-            )
+              origPostUserId,
+              origPostFirstName,
+              origPostLastName,
+              origPostUserPicturePath,
+              origPostPicturePath,
+              origPostDescription,
+              postType,
+              sharedBy,
+            }) =>
+              postType === 'Normal' || postType === null ? (
+                <PostWidget
+                  key={_id}
+                  postId={_id}
+                  postUserId={userId}
+                  name={`${firstName} ${lastName}`}
+                  description={description}
+                  location={location}
+                  picturePath={picturePath}
+                  userPicturePath={userPicturePath}
+                  likes={likes}
+                  comments={comments}
+                  postType={postType}
+                  sharedBy={sharedBy}
+                />
+              ) : postType === 'Shared' ? (
+                <PostWidget
+                  key={_id}
+                  postId={_id}
+                  postUserId={userId}
+                  name={`${firstName} ${lastName}`}
+                  description={description}
+                  location={location}
+                  picturePath={picturePath}
+                  userPicturePath={userPicturePath}
+                  likes={likes}
+                  comments={comments}
+                  postType={postType}
+                  origPostUserId={origPostUserId}
+                  origPostName={`${origPostFirstName} ${origPostLastName}`}
+                  origPostUserPicturePath={origPostUserPicturePath}
+                  origPostPicturePath={origPostPicturePath}
+                  origPostDescription={origPostDescription}
+                  isShared={true}
+                  sharedBy={sharedBy}
+                />
+              ) : null
           )
         : null}
     </>

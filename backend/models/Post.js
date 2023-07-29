@@ -26,6 +26,42 @@ const PostSchema = new Schema(
       type: Array,
       default: [],
     },
+    sharedFrom: {
+      type: String,
+    },
+    sharedBy: {
+      type: Array,
+      default: [],
+    },
+    origPostUserId: {
+      type: String,
+    },
+    origPostFirstName: {
+      type: String,
+    },
+    origPostLastName: {
+      type: String,
+    },
+    origPostUserPicturePath: {
+      type: String,
+    },
+    origPostPicturePath: {
+      type: String,
+    },
+    origPostDescription: {
+      type: String,
+    },
+    origPostLikes: {
+      type: Map,
+      of: Boolean,
+    },
+    origPostComments: {
+      type: Array,
+    },
+    postType: {
+      type: String,
+      default: null,
+    },
     deleted: {
       type: Boolean,
       default: false,

@@ -6,6 +6,7 @@ export const createPost = async (req, res) => {
   try {
     const { userId, description, picturePath } = req.body;
     const user = await User.findById(userId);
+
     const newPost = new Post({
       userId,
       firstName: user.firstName,
@@ -16,12 +17,64 @@ export const createPost = async (req, res) => {
       picturePath,
       likes: {},
       comments: [],
+      postType: 'Normal',
     });
     await newPost.save();
 
     const post = await Post.find({ deleted: { $ne: true } }).sort({
       createdAt: -1,
     });
+    res.status(201).json(post);
+  } catch (err) {
+    res.status(409).json({ message: err.message });
+  }
+};
+
+export const sharePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.body;
+    const user = await User.findById(userId);
+    const originalPost = await Post.findById(id);
+
+    if (!originalPost) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    if (originalPost.deleted) {
+      return res.status(400).json({ message: 'The post is already deleted' });
+    }
+
+    originalPost.sharedBy.push(userId);
+    await originalPost.save();
+
+    const newPost = new Post({
+      userId,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      location: user.location,
+      userPicturePath: user.picturePath,
+      likes: {},
+      comments: [],
+      sharedFrom: originalPost._id,
+      sharedBy: userId,
+      origPostUserId: originalPost.userId,
+      origPostFirstName: originalPost.firstName,
+      origPostLastName: originalPost.lastName,
+      origPostUserPicturePath: originalPost.userPicturePath,
+      origPostPicturePath: originalPost.picturePath,
+      origPostDescription: originalPost.description,
+      origPostLikes: originalPost.likes,
+      origPostComments: originalPost.comments,
+      postType: 'Shared',
+    });
+
+    await newPost.save();
+
+    const post = await Post.find({ deleted: { $ne: true } }).sort({
+      createdAt: -1,
+    });
+
     res.status(201).json(post);
   } catch (err) {
     res.status(409).json({ message: err.message });

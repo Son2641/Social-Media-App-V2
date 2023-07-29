@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  sharePost,
   getFeedPosts,
   getUserPosts,
   postComment,
@@ -16,6 +17,7 @@ router.get('/', getFeedPosts);
 router.get('/:userId/', getUserPosts);
 
 // Update
+router.post('/:id/share', verifyToken, sharePost);
 router.patch('/:id/like', verifyToken, likePost);
 router.post('/:postId/:userId/comment', verifyToken, postComment);
 router.patch('/:postId/:userId/comment/delete', verifyToken, deleteComment);
