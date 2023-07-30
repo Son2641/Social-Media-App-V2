@@ -73,21 +73,24 @@ const PostWidget = ({
   };
 
   const patchLike = async () => {
-    const response = await fetch(`http://localhost:3001/posts/${postId}/like`, {
-      method: 'PATCH',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId: loggedInUserId }),
-    });
+    const response = await fetch(
+      `https://connecthub-api.onrender.com/posts/${postId}/like`,
+      {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: loggedInUserId }),
+      }
+    );
     const updatedPost = await response.json();
     dispatch(setPost({ post: updatedPost }));
   };
 
   const handleComment = async () => {
     const response = await fetch(
-      `http://localhost:3001/posts/${postId}/${loggedInUserId}/comment`,
+      `https://connecthub-api.onrender.com/posts/${postId}/${loggedInUserId}/comment`,
       {
         method: 'POST',
         headers: {
@@ -103,14 +106,17 @@ const PostWidget = ({
   };
 
   const handleDeletePost = async () => {
-    const response = await fetch(`http://localhost:3001/posts/${postId}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId: loggedInUserId }),
-    });
+    const response = await fetch(
+      `https://connecthub-api.onrender.com/posts/${postId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: loggedInUserId }),
+      }
+    );
 
     if (response.ok) {
       setIsPostDeleted(true);
@@ -124,7 +130,7 @@ const PostWidget = ({
 
   const handleSharePost = async () => {
     const response = await fetch(
-      `http://localhost:3001/posts/${postId}/share`,
+      `https://connecthub-api.onrender.com/posts/${postId}/share`,
       {
         method: 'POST',
         headers: {

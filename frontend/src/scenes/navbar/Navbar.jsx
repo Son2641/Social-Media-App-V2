@@ -54,7 +54,7 @@ const Navbar = () => {
     }
     try {
       const response = await fetch(
-        `http://localhost:3001/users/search/${searchQuery}`,
+        `https://connecthub-api.onrender.com/users/search/${searchQuery}`,
         {
           method: 'GET',
           headers: {
@@ -83,7 +83,7 @@ const Navbar = () => {
   const performSearch = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3001/users/search/${searchQuery}`,
+        `https://connecthub-api.onrender.com/users/search/${searchQuery}`,
         {
           method: 'GET',
           headers: {
