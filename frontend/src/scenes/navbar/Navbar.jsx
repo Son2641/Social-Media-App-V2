@@ -120,8 +120,6 @@ const Navbar = () => {
     };
   }, [searchQuery]);
 
-  console.log('Search Results', searchResults);
-
   const renderOptionLabel = (results) => {
     return searchResults.map((result) => (
       <WidgetWrapper>
