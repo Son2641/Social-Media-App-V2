@@ -17,6 +17,7 @@ const AdsWidget = () => {
         <Typography color={medium}>Create Ad</Typography>
       </FlexBetween>
       <img
+        loading='lazy'
         width='100%'
         height='auto'
         alt='advert'

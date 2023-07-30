@@ -207,6 +207,7 @@ const PostWidget = ({
               </Typography>
               {origPostPicturePath && (
                 <img
+                  loading='lazy'
                   width='100%'
                   height='auto'
                   alt='post'
@@ -343,6 +344,7 @@ const PostWidget = ({
           </Typography>
           {picturePath && (
             <img
+              loading='lazy'
               width='100%'
               height='auto'
               alt='post'

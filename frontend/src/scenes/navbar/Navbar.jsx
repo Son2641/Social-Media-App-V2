@@ -10,6 +10,7 @@ import {
   useTheme,
   useMediaQuery,
   Autocomplete,
+  TextField,
 } from '@mui/material';
 import {
   Search,
@@ -26,6 +27,7 @@ import { setMode, setLogout, setSearchedUsers } from '../../state/index.js';
 import { useNavigate } from 'react-router-dom';
 import FlexBetween from '../../components/FlexBetween.jsx';
 import Friend from '../../components/Friend.jsx';
+import WidgetWrapper from '../../components/WidgetWrapper.jsx';
 
 const Navbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
@@ -91,6 +93,7 @@ const Navbar = () => {
         }
       );
       const data = await response.json();
+
       setSearchResults(data);
     } catch (error) {
       console.error('Error searching users:', error);
@@ -117,6 +120,21 @@ const Navbar = () => {
     };
   }, [searchQuery]);
 
+  console.log('Search Results', searchResults);
+
+  const renderOptionLabel = (results) => {
+    return searchResults.map((result) => (
+      <WidgetWrapper>
+        <Friend
+          key={result._id}
+          friendId={result._id}
+          name={result.fullName}
+          userPicturePath={result.picturePath}
+        />
+      </WidgetWrapper>
+    ));
+  };
+
   return (
     <FlexBetween padding='1rem 6%' backgroundColor={alt}>
       <FlexBetween gap='1.75rem'>
@@ -132,36 +150,34 @@ const Navbar = () => {
             },
           }}
         >
-          ConnectSon
+          ConnectHub
         </Typography>
 
-        <FlexBetween
-          backgroundColor={neutralLight}
-          borderRadius='9px'
-          gap='0'
-          padding='0.1rem 1.5rem'
-        >
-          <Box>
-            <Autocomplete
-              options={searchResults}
-              getOptionLabel={(user) => user.fullName}
-              renderInput={(params) => (
-                <InputBase
-                  {...params}
-                  placeholder='Search Users...'
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                />
-              )}
-              renderOption={(user) => (
-                <Friend
-                  friendId={user._id}
-                  name={user.fullName}
-                  userPicturePath={user.picturePath}
-                />
-              )}
-            />
-          </Box>
+        <FlexBetween borderRadius='15px' gap='0' padding='0.1rem 1.5rem'>
+          <Autocomplete
+            options={searchResults}
+            getOptionLabel={(result) => result.fullName}
+            renderOption={renderOptionLabel}
+            noOptionsText='No Users Found'
+            renderInput={(params) => (
+              <TextField
+                sx={{
+                  '& .MuiOutlinedInput-root.Mui-focused': {
+                    '& > fieldset': {
+                      border: 'none',
+                    },
+                  },
+                }}
+                type='search'
+                variant='outlined'
+                style={{ width: '300px' }}
+                {...params}
+                label='Search Users...'
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={handleKeyPress}
+              />
+            )}
+          />
 
           <IconButton onClick={handleSearch}>
             <Search />
